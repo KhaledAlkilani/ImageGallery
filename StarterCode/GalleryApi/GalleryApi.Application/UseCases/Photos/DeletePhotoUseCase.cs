@@ -20,18 +20,16 @@ public class DeletePhotoUseCase
         //
         // Vaiheet:
         // 1. Hae kuva tietokannasta:
-        //       var photo = await _photoRepository.GetByIdAsync(photoId);
-        //       if (photo is null) return Result.Failure("Kuvaa ... ei löydy.");
-        //
-        // 2. Poista tiedosto tallennuspalvelusta:
-        //       await _storageService.DeleteAsync(photo.FileName, photo.AlbumId);
-        //
-        // 3. Poista kuva tietokannasta:
-        //       await _photoRepository.DeleteAsync(photoId);
-        //
-        // 4. Palauta onnistunut tulos:
-        //       return Result.Success();
+        var photo = await _photoRepository.GetByIdAsync(photoId);
+        if (photo is null) return Result.Failure("Kuvaa ... ei löydy.");
 
-        throw new NotImplementedException("DeletePhotoUseCase ei ole vielä toteutettu. Katso TODO-kommentit.");
+        // 2. Poista tiedosto tallennuspalvelusta:
+        await _storageService.DeleteAsync(photo.FileName, photo.AlbumId);
+
+        // 3. Poista kuva tietokannasta:
+        await _photoRepository.DeleteAsync(photoId);
+
+        // 4. Palauta onnistunut tulos:
+        return Result.Success();
     }
 }

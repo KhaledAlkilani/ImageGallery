@@ -9,7 +9,7 @@ namespace GalleryApi.Infrastructure.Moderation;
 /// </summary>
 public class ModerationServiceClient
 {
-    private readonly string _apiKey;
+    private readonly ModerationServiceOptions _options;
 
     // TODO (Vaihe 4): Muuta konstruktori ottamaan IOptions<ModerationServiceOptions> parametrina
     //   sijaan string apiKey.
@@ -18,15 +18,14 @@ public class ModerationServiceClient
     //   public ModerationServiceClient(string apiKey) { _apiKey = apiKey; }
     //
     // Muutettu (Options Pattern):
-    //   public ModerationServiceClient(IOptions<ModerationServiceOptions> options)
-    //   {
-    //       _apiKey = options.Value.ApiKey;
-    //   }
-    //
-    // Muista muuttaa myös _apiKey-kentän tyyppi (tai poista se ja käytä _options.ApiKey suoraan).
-    public ModerationServiceClient(string apiKey)
+    public ModerationServiceClient(IOptions<ModerationServiceOptions> options)
     {
-        _apiKey = apiKey;
+        _options = options.Value;
+
+        if (string.IsNullOrEmpty(_options.ApiKey))
+        {
+            throw new InvalidOperationException("ModerationService apiKey is missing.");
+        }
     }
 
     /// <summary>
@@ -37,6 +36,10 @@ public class ModerationServiceClient
     {
         // Simuloitu tarkistus: oikeassa toteutuksessa lähettäisi kuvan
         // moderointipalvelun API:lle _apiKey:tä käyttäen
+        var apiKey = _options.ApiKey;
+        var baseUrl = _options.BaseUrl;
+
         return Task.FromResult(true);
+
     }
 }
