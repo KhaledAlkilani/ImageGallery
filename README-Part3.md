@@ -5,6 +5,7 @@ Tässä osassa siirrät salaisuuden (`ModerationService:ApiKey`) Azure Key Vault
 ## Mitä osaat tämän osan jälkeen?
 
 Kun olet tehnyt tämän osan loppuun, osaat:
+
 - erottaa mitä kannattaa pitää Application Settingsissä ja mitä Key Vaultissa
 - antaa App Servicelle rajatun lukuoikeuden Key Vaultiin RBAC-roolilla
 - lisätä Key Vaultin osaksi ASP.NET Coren konfiguraatioputkea
@@ -43,7 +44,7 @@ LOCATION="swedencentral"
 
 ### Miksi Key Vault, ei Application Settings?
 
-Osassa 2 tallensit Storage-asetukset Application Settingsiin. Se toimi koska ne ovat *konfiguraatioarvoja* — ei haittaa vaikka ne näkyisivät portaalissa. Mutta `ModerationService:ApiKey` on oikea salaisuus: jos se vuotaa, ulkopuolinen voi käyttää moderointipalvelua nimissäsi.
+Osassa 2 tallensit Storage-asetukset Application Settingsiin. Se toimi koska ne ovat _konfiguraatioarvoja_ — ei haittaa vaikka ne näkyisivät portaalissa. Mutta `ModerationService:ApiKey` on oikea salaisuus: jos se vuotaa, ulkopuolinen voi käyttää moderointipalvelua nimissäsi.
 
 ```
 Application Settings:
@@ -57,9 +58,10 @@ Key Vault:
 ```
 
 Key Vault lisää Application Settingsiin verrattuna:
+
 - **Salaus lepotilassa** — arvo salataan automaattisesti, ei näy portaalissa selväkielisenä
 - **Versiohistoria** — jokainen päivitys luo uuden version, vanhat säilyvät (palautus mahdollista)
-- **Auditointi** — Key Vault kirjaa lokiin *kuka* luki salaisuuden ja *milloin* (Azure Monitor)
+- **Auditointi** — Key Vault kirjaa lokiin _kuka_ luki salaisuuden ja _milloin_ (Azure Monitor)
 - **RBAC-pääsynhallinta** — voidaan antaa tarkat lukuoikeudet juuri niille identiteeteille jotka tarvitsevat
 - **Rotaatio** — salaisuuden arvon voi vaihtaa Key Vaultissa ilman koodimuutosta; sovellus hakee uuden arvon automaattisesti seuraavan käynnistyksen yhteydessä
 
@@ -75,7 +77,7 @@ Key Vault lisää Application Settingsiin verrattuna:
 1. Hae yläpalkin hakukentästä **"Key vaults"** → klikkaa **"+ Create"**
 2. Täytä **Basics**-välilehti:
    - **Resource Group**: valitse `rg-gallery-<etunimi>`
-   - **Key vault name**: `kv-gallery-<etunimi>` *(nimen on oltava maailmanlaajuisesti uniikki)*
+   - **Key vault name**: `kv-gallery-<etunimi>` _(nimen on oltava maailmanlaajuisesti uniikki)_
    - **Region**: `Sweden Central`
    - **Pricing tier**: `Standard`
 3. Siirry **Access configuration** -välilehdelle:
@@ -98,7 +100,7 @@ az keyvault create \
 
 </details>
 
-`--enable-rbac-authorization true` (tai portaalissa *Azure role-based access control*) tarkoittaa, että oikeudet hallitaan RBAC-rooleilla (kuten Blob Storagessa) — ei vanhemmalla Access Policy -mallilla. RBAC on suositeltu tapa.
+`--enable-rbac-authorization true` (tai portaalissa _Azure role-based access control_) tarkoittaa, että oikeudet hallitaan RBAC-rooleilla (kuten Blob Storagessa) — ei vanhemmalla Access Policy -mallilla. RBAC on suositeltu tapa.
 
 > **Tärkeää:** RBAC-pohjaisessa Key Vaultissa luojalla ei automaattisesti ole oikeutta kirjoittaa salaisuuksia. Ennen Vaihetta 1.2 sinun täytyy antaa itsellesi `Key Vault Secrets Officer` -rooli. Tee se Key Vaultin **Access control (IAM)** -sivulta samalla tavalla kuin Osassa 2 annettiin rooleja (+ Add → Add role assignment → hae "Key Vault Secrets Officer" → Members: valitse oma käyttäjätilisi). CLI:llä:
 >
@@ -114,7 +116,7 @@ az keyvault create \
 <summary><strong>▶ Azure Portal</strong></summary>
 
 1. Avaa Key Vault (`kv-gallery-<etunimi>`)
-2. Vasemmasta valikosta klikkaa **"Secrets"** (kohdassa *Objects*)
+2. Vasemmasta valikosta klikkaa **"Secrets"** (kohdassa _Objects_)
 3. Klikkaa **"+ Generate/Import"**
 4. Täytä:
    - **Upload options**: `Manual`
@@ -380,7 +382,7 @@ appsettings.json         ← Oletusarvot (matalin prioriteetti)
 <summary><strong>▶ Azure Portal</strong></summary>
 
 1. Avaa App Service (`gallery-api-<etunimi>`)
-2. Vasemmasta valikosta klikkaa **"Log stream"** (kohdassa *Monitoring*)
+2. Vasemmasta valikosta klikkaa **"Log stream"** (kohdassa _Monitoring_)
 3. Odota hetki — lokit alkavat virrata reaaliajassa
 4. Etsi mahdollisia Key Vault -virheitä (esim. `KeyVaultReferenceException`, `Forbidden`)
 
@@ -442,12 +444,12 @@ Manuaalinen työ:                    Infrastructure as Code (Bicep):
 az group create                     az deployment group create \
 az appservice plan create    →        --template-file main.bicep
 az webapp create                      --parameters ...
-az storage account create           
+az storage account create
 az storage container create         Yksi komento — kaikki resurssit kerralla.
-az keyvault create                  
+az keyvault create
 az role assignment create (x2)      Jos poistat kaiken ja ajat uudelleen,
 az webapp identity assign           saat täsmälleen saman lopputuloksen.
-az webapp config appsettings set    
+az webapp config appsettings set
                                     Tiedosto on versiohallinnassa Gitissä
                                     → muutoshistoria, code review, palautus.
 ```
@@ -725,15 +727,15 @@ az webapp deployment source config-zip \
 
 ### Vaihe 7: Vertailu — manuaalivaiheet vs. Bicep
 
-| | Manuaalisesti (Osat 2 & 3) | Bicepillä |
-|---|---|---|
-| Resurssien luominen | ~10 komentoa | 1 deployment |
-| RBAC-roolimääritykset | 2 erillistä komentoa | Automaattisesti templatessa |
-| Managed Identity | Erillinen komento | `identity: { type: 'SystemAssigned' }` |
-| Toistettavuus | Mahdolliset käsivirheet | Aina täsmälleen sama lopputulos |
-| Dokumentaatio | Erilliset muistiinpanot | Koodi on dokumentaatio |
-| Versionhallinta | Ei | Git-historia |
-| Ympäristöt (dev/prod) | Erilliset skriptit | Eri parametritiedostot |
+|                       | Manuaalisesti (Osat 2 & 3) | Bicepillä                              |
+| --------------------- | -------------------------- | -------------------------------------- |
+| Resurssien luominen   | ~10 komentoa               | 1 deployment                           |
+| RBAC-roolimääritykset | 2 erillistä komentoa       | Automaattisesti templatessa            |
+| Managed Identity      | Erillinen komento          | `identity: { type: 'SystemAssigned' }` |
+| Toistettavuus         | Mahdolliset käsivirheet    | Aina täsmälleen sama lopputulos        |
+| Dokumentaatio         | Erilliset muistiinpanot    | Koodi on dokumentaatio                 |
+| Versionhallinta       | Ei                         | Git-historia                           |
+| Ympäristöt (dev/prod) | Erilliset skriptit         | Eri parametritiedostot                 |
 
 **Milloin manuaalisesti, milloin Bicepillä?**
 
@@ -796,15 +798,16 @@ Sama sovelluskoodi molemmissa!
 Vain konfiguraatio eroaa.
 ```
 
-| Osa | Konseptit |
-|---|---|
-| Osa 1 | Clean Architecture, kovakoodattu salaisuus, User Secrets, Options Pattern, LocalStorageService |
+| Osa   | Konseptit                                                                                                  |
+| ----- | ---------------------------------------------------------------------------------------------------------- |
+| Osa 1 | Clean Architecture, kovakoodattu salaisuus, User Secrets, Options Pattern, LocalStorageService             |
 | Osa 2 | App Service, Application Settings, DefaultAzureCredential, Managed Identity, RBAC, AzureBlobStorageService |
-| Osa 3 | Key Vault, salaisuudet vs. konfiguraatioarvot, Key Vault -integraatio `Program.cs`:ssä, Bicep IaC |
+| Osa 3 | Key Vault, salaisuudet vs. konfiguraatioarvot, Key Vault -integraatio `Program.cs`:ssä, Bicep IaC          |
 
 ## Soveltamishaaste (suositus)
 
 Varmista että osaat käyttää tekniikkaa myös eri tilanteessa:
+
 1. Lisää Key Vaultiin toinen salaisuus, esim. `ModerationService--BaseUrl`.
 2. Poista vastaava arvo `appsettings.json`:sta tai jätä siihen vain placeholder.
 3. Varmista, että `IOptions<ModerationServiceOptions>` saa arvon Key Vaultista.

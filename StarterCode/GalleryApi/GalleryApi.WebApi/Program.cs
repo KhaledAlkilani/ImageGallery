@@ -1,3 +1,4 @@
+using Azure.Identity;
 using GalleryApi.Application;
 using GalleryApi.Infrastructure;
 using GalleryApi.Infrastructure.Moderation;
@@ -25,6 +26,14 @@ builder.Services.AddSingleton<ModerationServiceClient>();
 // Konfiguraatio-osiot (Options Pattern)
 builder.Services.Configure<StorageOptions>(
     builder.Configuration.GetSection(StorageOptions.SectionName));
+
+var keyVaultUrl = builder.Configuration["KeyVault:VaultUrl"];
+if (!string.IsNullOrEmpty(keyVaultUrl))
+{
+    builder.Configuration.AddAzureKeyVault(
+        new Uri(keyVaultUrl),
+        new DefaultAzureCredential());
+}
 
 // Sovellus- ja infrastruktuurikerrokset
 builder.Services.AddApplication();

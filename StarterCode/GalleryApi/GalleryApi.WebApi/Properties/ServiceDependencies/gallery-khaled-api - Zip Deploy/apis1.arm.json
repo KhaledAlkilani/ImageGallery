@@ -82,6 +82,7 @@
                 },
                 "virtualNetworkType": "None",
                 "certificates": null,
+                "enableClientCertificate": false,
                 "disableGateway": false,
                 "apiVersionConstraint": {
                   "minApiVersion": null
@@ -97,11 +98,11 @@
               "type": "Microsoft.ApiManagement/service/apis",
               "name": "SimpleExampleAPIap/SimpleExampleAPI",
               "properties": {
-                "displayName": "SimpleExampleAPI",
+                "displayName": "Gallery API",
                 "apiRevision": "1",
-                "description": null,
+                "description": "Kuvakirjasto API — Clean Architecture -esimerkki",
                 "subscriptionRequired": true,
-                "serviceUrl": null,
+                "serviceUrl": "https://gallery-khaled-api-ctd0azfwgkfsc0bz.norwayeast-01.azurewebsites.net",
                 "path": "",
                 "protocols": [
                   "https"
